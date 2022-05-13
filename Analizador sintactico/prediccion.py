@@ -47,6 +47,7 @@ def generar_siguientes():
                             break
                         elif 'epsilon' in primeros[h[h.index(k)+1]]:
                             siguientes[i].extend(primeros[h[h.index(k)+1]])
+                            siguientes[i].remove('epsilon')
                             siguientes[i].extend(siguientes[j])
                         else:
                             siguientes[i].extend(primeros[h[h.index(k)+1]])

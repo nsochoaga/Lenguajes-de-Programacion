@@ -62,13 +62,18 @@ gramatica = {
                         ['mientras', 'tk_parentesis_izquierdo','EXPRE', 'tk_parentesis_derecho', 'tk_llave_izquierda', 'SENTENCIAS', 'tk_parentesis_derecho','SENTENCIAS'],
                         ['repetir', 'SENTENCIAS', 'hasta', 'tk_parentesis_izquierdo', 'EXPRE', 'tk_parentesis_derecho', 'SENTENCIAS'],
                         ['eval', 'tk_llave_izquierda','CASO', 'sino', 'SENTENCIAS', 'tk_llave_derecha', 'SENTENCIAS'],
-                        ['desde', 'id', 'tk_asignacion', 'tk_numero', 'hasta', 'HASTA', 'INCREMENTO', 'tk_lleva_izquierda', 'SENTENCIAS','tk_llave_derecha', 'SENTENCIAS'],
+                        ['desde', 'id', 'tk_asignacion', 'EXPRE', 'hasta', 'EXPRE', 'INCREMENTO', 'tk_llave_izquierda', 'SENTENCIAS','tk_llave_derecha', 'SENTENCIAS'],
                         ['id','tk_parentesis_izquierdo','ARGUMENTOS','tk_parentesis_derecho','SENTENCIAS'],
                         ['epsilon']],
     'EXPRE':            [['EXPRE','OPER','EXPRE','AND'],['tk_parentesis_izquierdo','EXPRE','tk_parentesis_derecho'],['tk_numero'],['tk_cadena'],['id']],
     'AND':              [['and','EXPRE'],['or','EXPRE'],['epsilon']],
-    'OPER':             [['tk_mayor'],["tk_mayor_igual"],["tk_menor"],["tk_menor_igual"],["tk_igual_que"]],
-    'ARGUMENTOS':       [[]],
-
+    'OPER':             [['tk_mayor'],["tk_mayor_igual"],["tk_menor"],["tk_menor_igual"],["tk_igual_que"],["tk_suma"],["tk_resta" ],["tk_potenciacion"],
+                            ["tk_modulo"],["tk_division"]],
+    'ELSE':             [['sino', 'SENTENCIAS'],['epsilon']],
+    'CASO':             [['caso','tk_parentesis_izquierdo','EXPRE','tk_parentesis_derecho', 'SENTENCIAS', 'CASO'],['epsilon']],
+    'INCREMENTO':       [['paso','EXPRE'],['epsilon']],
+    'ARGUMENTOS':       [['tk_numero','ARGUMENTOS2'],['tk_cadena','ARGUMENTOS2'],['id','ARGUMENTOS2']],
+    'ARGUMENTOS2':      [['tk_coma','ARGUMENTOS'],['epsilon']],
+    'SUBRUTINAS':       [['subrutina','id', 'tk_parentesis_izquierdo', 'EXPRE','tk_parentesis_derecho', 'VALOREF','SUBRUTINAS']]
 
 }
