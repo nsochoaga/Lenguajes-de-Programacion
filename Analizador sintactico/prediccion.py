@@ -1,26 +1,33 @@
 #from gramatica import gramatica, palabras_reservadas, tokens_especiales
-from gramatica_de_prueba import gramatica, palabras_reservadas, tokens_especiales
+from gramatica import gramatica, palabras_reservadas, tokens_especiales
 
 primeros= {}
 
 siguientes={}
 
 def generar_primeros ():
+    
     for g in palabras_reservadas:
         primeros[g]=[g]
+    for g in tokens_especiales:
+        primeros[g]=[g]
+
+    for b in list(gramatica):
+        primeros[b]=[]
+    
     for i in reversed(list(gramatica)):
-        primeros[i] = []
         for j in gramatica[i]:
             for h in j:
                 if h == 'epsilon' and len(j) == 1:
                     primeros[i].append('epsilon')
                 elif h in palabras_reservadas or h in tokens_especiales:
                     primeros[i].append(h)
+                    
                     break
                 elif h in gramatica.keys():
                     primeros[i].extend(primeros[h])
                     if 'epsilon' in primeros[h]:
-                        primeros[i].remove('epsilon')
+                        primeros[i].remove('epsilon') 
 
 def generar_siguientes():
     lisGrama= list(gramatica)
@@ -52,8 +59,14 @@ def generar_siguientes():
 
 generar_primeros()
 
+for i in list(gramatica):
+   print (i, end=' - ')
+   print (primeros[i])
+
 generar_siguientes()
 
-for i in siguientes:
+print("\n suiguiente:\n")
+
+for i in list(gramatica):
    print (i, end=' - ')
-   print (siguientes[i])
+   print (set(siguientes[i]))
