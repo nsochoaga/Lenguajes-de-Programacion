@@ -1,9 +1,11 @@
 #from gramatica import gramatica, palabras_reservadas, tokens_especiales
-from gramatica import gramatica, palabras_reservadas, tokens_especiales
+from gramatica_de_prueba import gramatica, palabras_reservadas, tokens_especiales
 
 primeros= {}
 
 siguientes={}
+
+prediccion={}
 
 def generar_primeros ():
     
@@ -11,7 +13,7 @@ def generar_primeros ():
         primeros[g]=[g]
     for g in tokens_especiales:
         primeros[g]=[g]
-
+    primeros['epsilon'] = ['epsilon']
     for b in list(gramatica):
         primeros[b]=[]
     
@@ -53,6 +55,31 @@ def generar_siguientes():
                             siguientes[i].extend(primeros[h[h.index(k)+1]])
 
 
+def generar_prediccion():
+    noter=0
+    auxiliar=[]
+    lisGrama= list(gramatica)
+    for b in list(gramatica):
+        prediccion[b]=[]
+    for i in lisGrama:
+        
+        for j in gramatica[i]:
+            for h in j:
+                if h in palabras_reservadas or h in tokens_especiales:
+                    prediccion[i].append([h])
+                    break
+                else:
+                    noter=1
+                    if 'epsilon' in primeros[h]:
+                        auxiliar = primeros[h]
+                        auxiliar.extend(siguientes[i])
+                        auxiliar.remove('epsilon')
+                        
+                    else:
+                        auxiliar.extend(primeros[h])
+            if noter:
+                prediccion[i].append(auxiliar)
+                noter = 0
 
         
         
@@ -60,14 +87,20 @@ def generar_siguientes():
 
 generar_primeros()
 
-for i in list(gramatica):
+"""for i in list(gramatica):
    print (i, end=' - ')
-   print (primeros[i])
+   print (primeros[i])"""
 
 generar_siguientes()
 
-print("\n suiguiente:\n")
+"""print("\n suiguiente:\n")
 
 for i in list(gramatica):
    print (i, end=' - ')
-   print (set(siguientes[i]))
+   print (set(siguientes[i]))"""
+
+generar_prediccion()
+
+for i in list(gramatica):
+   print (i, end=' - ')
+   print (prediccion[i])

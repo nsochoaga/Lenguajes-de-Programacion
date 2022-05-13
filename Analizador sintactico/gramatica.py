@@ -74,6 +74,10 @@ gramatica = {
     'INCREMENTO':       [['paso','EXPRE'],['epsilon']],
     'ARGUMENTOS':       [['tk_numero','ARGUMENTOS2'],['tk_cadena','ARGUMENTOS2'],['id','ARGUMENTOS2']],
     'ARGUMENTOS2':      [['tk_coma','ARGUMENTOS'],['epsilon']],
-    'SUBRUTINAS':       [['subrutina','id', 'tk_parentesis_izquierdo', 'EXPRE','tk_parentesis_derecho', 'VALOREF','SUBRUTINAS']]
-
+    'SUBRUTINAS':       [['subrutina','id', 'tk_parentesis_izquierdo','REF', 'EXPRESUB','tk_parentesis_derecho', 'VALOREF','SUBRUTINAS']],
+    'REF':              [['ref'],['epsilon']],
+    'EXPRESUB':         [['ID','tk_dos_puntos','TIPODATO','EXPRESUB2']],
+    'EXPRESUB2':        [['tk_punto_y_coma','EXPRESUB'],['epsilon']],
+    'VALOREF':          [['retorna','TIPODATO','ESPECIFICACION','inicio','SENTENCIAS','retorna','tk_parentesis_izquierdo','EXPRE','tk_parentesis_derecho','fin'],
+                        ['ESPECIFICACION','inicio','SENTENCIAS','fin']]
 }
