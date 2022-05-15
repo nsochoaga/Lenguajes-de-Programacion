@@ -9,7 +9,7 @@ siguientes={}
 prediccion={}
 
 def generar_primeros ():
-    
+    noter=0
     for g in palabras_reservadas:
         primeros[g]=[g]
         primeros2[g]=[[g]]
@@ -31,6 +31,12 @@ def generar_primeros ():
                     primeros2[i].append(['epsilon'])
                     break
                 elif h in palabras_reservadas or h in tokens_especiales:
+                    if noter==1:
+                        if len(auxiliar)!=0:
+                            primeros2[i].append(auxiliar)
+                        auxiliar=[]
+                        noter=0
+                        break
                     primeros[i].append(h)
                     if len(auxiliar)==0:
                         primeros2[i].append([h])
@@ -38,6 +44,7 @@ def generar_primeros ():
                         auxiliar.extend([h])
                     break
                 elif h in gramatica.keys():
+                    noter=1
                     primeros[i].extend(primeros[h])
                     auxiliar.extend(primeros[h])
                     if 'epsilon' in primeros[h]:
@@ -124,20 +131,35 @@ def get_prediccion():
     for i in list(gramatica):
         for j in range(len(primeros2[i])):
             primeros2[i][j] = list(set(primeros2[i][j]))
+    for i in list(gramatica):
+        for j in range(len(prediccion[i])):
+            prediccion[i][j] = list(set(prediccion[i][j]))
     return prediccion,primeros2,siguientes
 
 generar_primeros()
 generar_siguientes()
 generar_prediccion()
-'''
 for i in list(gramatica):
-   print (i, end=' - ')
-   print (primeros[i])
+        siguientes[i] = list(set(siguientes[i]))
+for i in list(gramatica):
+    for j in range(len(primeros2[i])):
+        primeros2[i][j] = list(set(primeros2[i][j]))
+for i in list(gramatica):
+    for j in range(len(prediccion[i])):
+        prediccion[i][j] = list(set(prediccion[i][j]))
+'''
+
+
 print("\n primeros2 \n")
 print("\n primeros3 \n")
 for i in list(gramatica):
     print (i, end=' - ')
     print (prediccion[i])
+    
+    for i in list(gramatica):
+   print (i, end=' - ')
+   print (primeros2[i])
+
 for i in list(gramatica):
    print (i, end=' - ')
    print (siguientes[i])'''
