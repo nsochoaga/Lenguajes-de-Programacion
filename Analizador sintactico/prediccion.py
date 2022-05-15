@@ -164,3 +164,7 @@ for i in list(gramatica):
    print (i, end=' - ')
    print (siguientes[i])'''
 
+for i in list(gramatica):
+   print (i, end=' - ')
+   print (primeros[i])
+
