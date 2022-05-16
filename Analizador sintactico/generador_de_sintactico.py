@@ -14,8 +14,8 @@ file.write ("        token = getNextToken()\n    else:\n        errorSintaxis(le
 file.write ("def getNextToken():\n    if len(tokenList) == 0:\n        return ['$','$','$']\n    else: return tokenList.pop(0)\n\n")
 
 file.write("def errorSintaxis(regla): \n    if regla in palabras_reservadas or regla in tokens_especiales:\n        print(f\'<{token[-2] }:{token [-1]}> Error sintactico: se encontro: ', end='')\n")
-
-file.write("        if token[0] in tokens_especiales:\n            print(f\"'{tk[token[0]] }'\",end='')\n")
+file.write("        if token[0] == 'id':\n            print(f\"'{token[1] }'\",end='')\n")
+file.write("        elif token[0] in tokens_especiales:\n            print(f\"'{tk[token[0]] }'\",end='')\n")
 file.write("        else:\n            print(f\"'{token[0] }'\",end='')\n")
 file.write("        print('; se esperaba: ',end='')\n")
 file.write("        if regla in tokens_especiales:\n            print(f\"'{tk[regla] }'.\")\n        else:\n            print(f\"'{regla }'.\")\n        exit()\n")        

@@ -7,7 +7,8 @@ palabras_reservadas = [
     'TRUE', 'FALSE', 'SI', 'NO', 'leer', 'cadena', 'dim', 'int', 'cos', 'sin', 'cls', 'set_ifs', 
     'abs', 'arctan', 'ascii','dec', 'eof', 'exp', 'get_ifs', 'inc', 'log', 'lower', 'mem',
     'ord', 'paramval', 'pcount', 'pos', 'random', 'sec', 'set_stdin', 'set_stdout', 'sqrt',
-    'str', 'strdup', 'strlen', 'substr', 'upper', 'val', 'alen', 'tk_numero', 'tk_cadena', 'id','tk_numero',"tk_cadena"
+    'str', 'strdup', 'strlen', 'substr', 'upper', 'val', 'alen', 'tk_numero', 'tk_cadena', 'id','tk_numero',
+    "tk_cadena"
 ]
 
 #Un diccionario para acceder al nombre de cada token especial
@@ -78,18 +79,18 @@ gramatica = {
     'ASIGID':           [['tk_dos_puntos'],['tk_asignacion']],
     'EXPRE':            [['tk_parentesis_izquierdo','EXPRE','tk_parentesis_derecho','LOGIC'],['tk_numero','EXPRE2'],['tk_cadena'],['IDV','EXPRE2'],
                         ['tk_llave_izquierda','LISTA','tk_llave_derecha'],['alen','tk_parentesis_izquierdo','id','tk_parentesis_derecho']],
-    'LOGIC':            [['or','EXPRE'],['epsilon']],
+    'LOGIC':            [['or','EXPRE'],['and','EXPRE'],['epsilon']],
     'LISTA':            [['tk_numero','LISTA2'],['tk_cadena','LISTA2'],['tk_llave_izquierda','LISTA3','tk_llave_derecha','LISTA2']],
     'LISTA3':           [['tk_numero','LISTA2'],['tk_cadena','LISTA2'],['epsilon']],
     'LISTA2':           [['tk_coma','LISTA'],['epsilon']],
     'EXPRE2':           [['tk_suma','EXPRE3'],['tk_multiplicacion','EXPRE3'],['OPER','EXPRE'],['epsilon']],
     'EXPRE3':           [['IDV'],['tk_numero']],
-    'AND':              [['and','EXPRE'],['or','EXPRE'],['epsilon']],
     'OPER':             [['tk_mayor'],["tk_mayor_igual"],["tk_menor"],["tk_menor_igual"],["tk_igual_que"],['tk_suma'],["tk_resta" ],["tk_potenciacion"],
                             ["tk_modulo"],["tk_division"]],
     'ELSE':             [['sino','SIELSE','ELSE'],['epsilon']],
     'SIELSE':           [['si','tk_parentesis_izquierdo','EXPRE','tk_parentesis_derecho','ELSE','SENTENCIAS'],['SENTENCIAS']],
-    'CASO':             [['caso','tk_parentesis_izquierdo','EXPRE','tk_parentesis_derecho', 'SENTENCIAS', 'CASO'],['epsilon']],
+    'CASO':             [['caso','tk_parentesis_izquierdo','EXPRE','AND','tk_parentesis_derecho', 'SENTENCIAS', 'CASO'],['epsilon']],
+    'AND':              [['and','EXPRE'],['epsilon']],
     'INCREMENTO':       [['paso','EXPRE'],['epsilon']],
     'ARGUMENTOS':       [['tk_numero','ARGUMENTOS2'],['tk_cadena','ARGUMENTOS2'],['id','ARGUMENTOS2'],['epsilon']],
     'ARGUMENTOS2':      [['tk_coma','ARGUMENTOS'],['epsilon']],
