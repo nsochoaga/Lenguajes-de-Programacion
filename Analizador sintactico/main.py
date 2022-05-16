@@ -25,7 +25,7 @@ def errorSintaxis(regla):
         exit()
 
 def INICIO(): 
-    if  token[0] == 'programa' or token[0] == 'var' or token[0] == 'const' or token[0] == 'tipos' : 
+    if  token[0] == 'const' or token[0] == 'programa' or token[0] == 'var' or token[0] == 'tipos' : 
         PROG()
         ESPECIFICACION()
         emparejar('inicio')
@@ -81,23 +81,45 @@ def CONST2():
         emparejar('NO')
     else: errorSintaxis('CONST2')
 def RMT(): 
-    if  token[0] == 'numerico' or token[0] == 'logico' or token[0] == 'cadena' : 
+    if  token[0] == 'numerico' or token[0] == 'cadena' or token[0] == 'logico' : 
         TIPODATO()
-    elif token[0] == 'matriz' : 
+    elif token[0] == 'vector' : 
         emparejar('vector')
         emparejar('tk_corchete_izquierdo')
-        emparejar('tk_numero')
+        VECTOR2()
+        emparejar('tk_corchete_derecho')
+        TIPODATO()
+    elif token[0] == 'matriz' : 
+        emparejar('matriz')
+        emparejar('tk_corchete_izquierdo')
+        MATRIZ()
         emparejar('tk_corchete_derecho')
         TIPODATO()
     elif token[0] == 'registro' : 
-        emparejar('matriz')
-        emparejar('tk_corchete_izquierdo')
-        emparejar('tk_numero')
-        emparejar('tk_coma')
-        emparejar('tk_numero')
-        emparejar('tk_corchete_derecho')
-        TIPODATO()
+        emparejar('registro')
+        REGISTRO()
     else: errorSintaxis('RMT')
+def VECTOR2(): 
+    if  token[0] == 'tk_numero' : 
+        emparejar('tk_numero')
+    elif token[0] == 'id' : 
+        emparejar('id')
+    elif token[0] == 'tk_multiplicacion' : 
+        emparejar('tk_multiplicacion')
+    else: errorSintaxis('VECTOR2')
+def MATRIZ(): 
+    if  token[0] == 'tk_numero' : 
+        emparejar('tk_numero')
+        MATRIZ2()
+    elif token[0] == 'tk_multiplicacion' : 
+        emparejar('tk_multiplicacion')
+        MATRIZ2()
+    else: errorSintaxis('MATRIZ')
+def MATRIZ2(): 
+    if  token[0] == 'tk_coma' : 
+        emparejar('tk_coma')
+        MATRIZ()
+    else: pass
 def TIPODATO(): 
     if  token[0] == 'numerico' : 
         emparejar('numerico')
@@ -122,8 +144,7 @@ def TIPOS():
 def SENTENCIAS(): 
     if  token[0] == 'id' : 
         emparejar('id')
-        ASIGID()
-        EXPRE()
+        IDSENTENCIA()
         SENTENCIAS()
     elif token[0] == 'si' : 
         emparejar('si')
@@ -142,7 +163,7 @@ def SENTENCIAS():
         emparejar('tk_parentesis_derecho')
         emparejar('tk_llave_izquierda')
         SENTENCIAS()
-        emparejar('tk_parentesis_derecho')
+        emparejar('tk_llave_derecha')
         SENTENCIAS()
     elif token[0] == 'repetir' : 
         emparejar('repetir')
@@ -172,11 +193,6 @@ def SENTENCIAS():
         SENTENCIAS()
         emparejar('tk_llave_derecha')
         SENTENCIAS()
-    elif token[0] == 'id' : 
-        emparejar('id')
-        ASIGID()
-        EXPRE()
-        SENTENCIAS()
     elif token[0] == 'imprimir' : 
         emparejar('imprimir')
         emparejar('tk_parentesis_izquierdo')
@@ -186,10 +202,52 @@ def SENTENCIAS():
     elif token[0] == 'leer' : 
         emparejar('leer')
         emparejar('tk_parentesis_izquierdo')
-        emparejar('id')
+        LEER()
+        emparejar('tk_parentesis_derecho')
+        SENTENCIAS()
+    elif token[0] == 'dim' : 
+        emparejar('dim')
+        emparejar('tk_parentesis_izquierdo')
+        LEER()
+        emparejar('tk_parentesis_derecho')
+        SENTENCIAS()
+    elif token[0] == 'cls' : 
+        emparejar('cls')
+        emparejar('tk_parentesis_izquierdo')
         emparejar('tk_parentesis_derecho')
         SENTENCIAS()
     else: pass
+def IDSENTENCIA(): 
+    if  token[0] == 'tk_llave_izquierda' or token[0] == 'id' or token[0] == 'tk_cadena' or token[0] == 'tk_resta' or token[0] == 'tk_mayor' or token[0] == 'tk_division' or token[0] == 'tk_menor_igual' or token[0] == 'tk_suma' or token[0] == 'tk_asignacion' or token[0] == 'tk_mayor_igual' or token[0] == 'tk_modulo' or token[0] == 'tk_dos_puntos' or token[0] == 'tk_parentesis_izquierdo' or token[0] == 'tk_menor' or token[0] == 'tk_igual_que' or token[0] == 'tk_potenciacion' or token[0] == 'tk_numero' : 
+        ASIGID()
+        EXPRE()
+    elif token[0] == 'tk_parentesis_izquierdo' : 
+        emparejar('tk_parentesis_izquierdo')
+        ARGUMENTOS()
+        emparejar('tk_parentesis_derecho')
+    else: errorSintaxis('IDSENTENCIA')
+def LEER(): 
+    if  token[0] == 'id' : 
+        emparejar('id')
+        LEER2()
+    elif token[0] == 'tk_cadena' : 
+        emparejar('tk_cadena')
+    else: errorSintaxis('LEER')
+def LEER2(): 
+    if  token[0] == 'tk_corchete_izquierdo' : 
+        emparejar('tk_corchete_izquierdo')
+        LEER3()
+        emparejar('tk_corchete_derecho')
+    elif token[0] == 'tk_coma' : 
+        emparejar('tk_coma')
+        LEER()
+    else: pass
+def LEER3(): 
+    if  token[0] == 'id' : 
+        emparejar('id')
+    elif token[0] == 'tk_numero' : 
+        emparejar('tk_numero')
+    else: errorSintaxis('LEER3')
 def IMPRIMIR(): 
     if  token[0] == 'id' : 
         emparejar('id')
@@ -222,15 +280,54 @@ def EXPRE():
         EXPRE2()
     elif token[0] == 'tk_cadena' : 
         emparejar('tk_cadena')
-    elif token[0] == 'id' : 
-        emparejar('id')
+    elif token[0] == 'id' or token[0] == 'tk_resta' or token[0] == 'tk_mayor' or token[0] == 'tk_division' or token[0] == 'tk_menor_igual' or token[0] == 'tk_suma' or token[0] == 'tk_mayor_igual' or token[0] == 'tk_modulo' or token[0] == 'tk_menor' or token[0] == 'tk_igual_que' or token[0] == 'tk_potenciacion' : 
+        IDV()
         EXPRE2()
+    elif token[0] == 'tk_llave_izquierda' : 
+        emparejar('tk_llave_izquierda')
+        LISTA()
+        emparejar('tk_llave_derecha')
     else: errorSintaxis('EXPRE')
+def LISTA(): 
+    if  token[0] == 'tk_numero' : 
+        emparejar('tk_numero')
+        LISTA2()
+    elif token[0] == 'tk_cadena' : 
+        emparejar('tk_cadena')
+        LISTA2()
+    elif token[0] == 'tk_llave_izquierda' : 
+        emparejar('tk_llave_izquierda')
+        LISTA3()
+        emparejar('tk_llave_derecha')
+        LISTA2()
+    else: errorSintaxis('LISTA')
+def LISTA3(): 
+    if  token[0] == 'tk_numero' : 
+        emparejar('tk_numero')
+        LISTA2()
+    elif token[0] == 'tk_cadena' : 
+        emparejar('tk_cadena')
+        LISTA2()
+    else: pass
+def LISTA2(): 
+    if  token[0] == 'tk_coma' : 
+        emparejar('tk_coma')
+        LISTA()
+    else: pass
 def EXPRE2(): 
     if  token[0] == 'tk_suma' : 
         emparejar('tk_suma')
-        emparejar('id')
+        EXPRE3()
+    elif token[0] == 'tk_resta' or token[0] == 'tk_mayor' or token[0] == 'tk_division' or token[0] == 'tk_menor_igual' or token[0] == 'tk_suma' or token[0] == 'tk_mayor_igual' or token[0] == 'tk_modulo' or token[0] == 'tk_menor' or token[0] == 'tk_igual_que' or token[0] == 'tk_potenciacion' : 
+        OPER()
+        EXPRE()
     else: pass
+def EXPRE3(): 
+    if  token[0] == 'id' : 
+        IDV()
+    elif token[0] == 'tk_numero' : 
+        emparejar('tk_numero')
+    else: errorSintaxis('EXPRE3')
 def AND(): 
     if  token[0] == 'and' : 
         emparejar('and')
@@ -264,8 +361,18 @@ def OPER():
 def ELSE(): 
     if  token[0] == 'sino' : 
         emparejar('sino')
-        SENTENCIAS()
+        SIELSE()
+        ELSE()
     else: pass
+def SIELSE(): 
+    if  token[0] == 'si' : 
+        emparejar('si')
+        emparejar('tk_parentesis_izquierdo')
+        EXPRE()
+        emparejar('tk_parentesis_derecho')
+        ELSE()
+        SENTENCIAS()
+    else: errorSintaxis('SIELSE')
 def CASO(): 
     if  token[0] == 'caso' : 
         emparejar('caso')
@@ -346,6 +453,23 @@ def ID2():
         emparejar('tk_coma')
         ID()
     else: pass
+def IDV(): 
+    if  token[0] == 'id' : 
+        emparejar('id')
+        IDV2()
+    else: errorSintaxis('IDV')
+def IDV2(): 
+    if  token[0] == 'tk_corchete_izquierdo' : 
+        emparejar('tk_corchete_izquierdo')
+        VECTORDEF()
+        emparejar('tk_corchete_derecho')
+    else: pass
+def VECTORDEF(): 
+    if  token[0] == 'tk_numero' : 
+        emparejar('tk_numero')
+    elif token[0] == 'id' : 
+        emparejar('id')
+    else: errorSintaxis('VECTORDEF')
 tokenList = get_tokens()
 token = getNextToken()
 INICIO()

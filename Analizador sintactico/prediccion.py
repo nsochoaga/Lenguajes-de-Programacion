@@ -26,22 +26,28 @@ def generar_primeros ():
     for i in reversed(list(gramatica)):
         for j in gramatica[i]:
             for h in j:
+                
                 if h == 'epsilon' and len(j) == 1:
                     primeros[i].append('epsilon')
                     primeros2[i].append(['epsilon'])
                     break
                 elif h in palabras_reservadas or h in tokens_especiales:
+                    
                     if noter==1:
+                        if i == 'ELSE':
+                            print(h)
                         if len(auxiliar)!=0:
                             primeros2[i].append(auxiliar)
                         auxiliar=[]
                         noter=0
                         break
+                    
                     primeros[i].append(h)
                     if len(auxiliar)==0:
                         primeros2[i].append([h])
                     else:
                         auxiliar.extend([h])
+
                     break
                 elif h in gramatica.keys():
                     noter=1
@@ -50,6 +56,7 @@ def generar_primeros ():
                     if 'epsilon' in primeros[h]:
                         primeros[i].remove('epsilon')
                         auxiliar.remove('epsilon')
+            noter=0
             if len(auxiliar)!=0:            
                 primeros2[i].append(auxiliar)
                 auxiliar=[] 
@@ -156,15 +163,12 @@ for i in list(gramatica):
     print (i, end=' - ')
     print (prediccion[i])
     
-    for i in list(gramatica):
+  
+for i in list(gramatica):
    print (i, end=' - ')
-   print (primeros2[i])
+   print (primeros[i])
 
 for i in list(gramatica):
    print (i, end=' - ')
    print (siguientes[i])'''
-
-for i in list(gramatica):
-   print (i, end=' - ')
-   print (primeros[i])
 
