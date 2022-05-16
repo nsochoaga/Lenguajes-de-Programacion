@@ -1,6 +1,16 @@
 import re
 import sys
 
+tokens_especiales2 = {
+          'tk_asignacion': '=',           'tk_coma': ',',                  'tk_corchete_derecho': ']',
+          'tk_corchete_izquierdo': '[',   'tk_distinto_de': '<>',           'tk_division': '/',
+          'tk_dos_puntos': ':',           'tk_igual_que': '==',             'tk_llave_derecha': '}',
+         'tk_llave_izquierda': '{' ,       'tk_mayor': '>',                 'tk_mayor_igual': '>=',
+          'tk_menor': '<',                 'tk_menor_igual': '<=',          'tk_modulo': '%',           'tk_multiplicacion': '*',
+          'tk_parentesis_derecho': ')',   'tk_parentesis_izquierdo': '(',   'tk_potenciacion': '^',
+         'tk_punto': '.' ,                'tk_punto_y_coma': ';',          'tk_resta': '-',            'tk_suma': '+'
+        }
+
 def get_tokens():
 
     tipo_token = 'nulo'
@@ -69,7 +79,7 @@ def get_tokens():
         '.' : 'tk_punto',               ';' : 'tk_punto_y_coma',         '-' : 'tk_resta',            '+' : 'tk_suma'
         }
 
-
+    
 
 
     

@@ -4,6 +4,7 @@ from gramatica import gramatica, palabras_reservadas, tokens_especiales
 file = open("main.py", "w")
 
 file.write("from analizador_lexico import get_tokens\n")
+file.write("from analizador_lexico import tokens_especiales2 as tk\n")
 file.write("from prediccion import get_prediccion\n\nprediccion,primeros,siguientes = get_prediccion()\n")
 file.write("from gramatica import tokens_especiales, palabras_reservadas\n\n")
 
@@ -12,7 +13,13 @@ file.write ("        token = getNextToken()\n    else:\n        errorSintaxis(le
 
 file.write ("def getNextToken():\n    if len(tokenList) == 0:\n        return ['$','$','$']\n    else: return tokenList.pop(0)\n\n")
 
-file.write("def errorSintaxis(regla): \n    if regla in palabras_reservadas or regla in tokens_especiales:\n        print(f'<{token[-2] },{token [-1]}> Error sintactico: se encontro: {token[0] }; se esperaba: {regla }')\n        exit()\n    else:\n        print(f'<{token[-2] },{token [-1]}> Error sintactico: se encontro: {token[0] }; se esperaba:', prediccion[regla])\n        exit()\n\n")
+file.write("def errorSintaxis(regla): \n    if regla in palabras_reservadas or regla in tokens_especiales:\n        print(f\'<{token[-2] }:{token [-1]}> Error sintactico: se encontro: ', end='')\n")
+
+file.write("        if token[0] in tokens_especiales:\n            print(f\"'{tk[token[0]] }'\",end='')\n")
+file.write("        else:\n            print(f\"'{token[0] }'\",end='')\n")
+file.write("        print('; se esperaba: ',end='')\n")
+file.write("        if regla in tokens_especiales:\n            print(f\"'{tk[regla] }'.\")\n        else:\n            print(f\"'{regla }'.\")\n        exit()\n")        
+file.write("    else:\n        print(f'<{token[-2] }:{token [-1]}> Error sintactico: se encontro: {token[0] }; se esperaba:', prediccion[regla])\n        exit()\n\n")
 listgram=list(gramatica)
 
 conjuntos,primeros,siguientes = get_prediccion()

@@ -1,4 +1,5 @@
 from analizador_lexico import get_tokens
+from analizador_lexico import tokens_especiales2 as tk
 from prediccion import get_prediccion
 
 prediccion,primeros,siguientes = get_prediccion()
@@ -18,10 +19,19 @@ def getNextToken():
 
 def errorSintaxis(regla): 
     if regla in palabras_reservadas or regla in tokens_especiales:
-        print(f'<{token[-2] },{token [-1]}> Error sintactico: se encontro: {token[0] }; se esperaba: {regla }')
+        print(f'<{token[-2] }:{token [-1]}> Error sintactico: se encontro: ', end='')
+        if token[0] in tokens_especiales:
+            print(f"'{tk[token[0]] }'",end='')
+        else:
+            print(f"'{token[0] }'",end='')
+        print('; se esperaba: ',end='')
+        if regla in tokens_especiales:
+            print(f"'{tk[regla] }'.")
+        else:
+            print(f"'{regla }'.")
         exit()
     else:
-        print(f'<{token[-2] },{token [-1]}> Error sintactico: se encontro: {token[0] }; se esperaba:', prediccion[regla])
+        print(f'<{token[-2] }:{token [-1]}> Error sintactico: se encontro: {token[0] }; se esperaba:', prediccion[regla])
         exit()
 
 def INICIO(): 
@@ -57,7 +67,12 @@ def VAR():
         ID()
         emparejar('tk_dos_puntos')
         RMT()
+        PC()
         VAR()
+    else: pass
+def PC(): 
+    if  token[0] == 'tk_punto_y_coma' : 
+        emparejar('tk_punto_y_coma')
     else: pass
 def CONST(): 
     if  token[0] == 'id' : 
@@ -81,7 +96,7 @@ def CONST2():
         emparejar('NO')
     else: errorSintaxis('CONST2')
 def RMT(): 
-    if  token[0] == 'logico' or token[0] == 'numerico' or token[0] == 'cadena' : 
+    if  token[0] == 'cadena' or token[0] == 'logico' or token[0] == 'numerico' : 
         TIPODATO()
     elif token[0] == 'vector' : 
         emparejar('vector')
@@ -326,7 +341,7 @@ def EXPRE2():
     elif token[0] == 'tk_multiplicacion' : 
         emparejar('tk_multiplicacion')
         EXPRE3()
-    elif token[0] == 'tk_resta' or token[0] == 'tk_suma' or token[0] == 'tk_potenciacion' or token[0] == 'tk_division' or token[0] == 'tk_igual_que' or token[0] == 'tk_mayor_igual' or token[0] == 'tk_modulo' or token[0] == 'tk_menor_igual' or token[0] == 'tk_menor' or token[0] == 'tk_mayor' : 
+    elif token[0] == 'tk_menor_igual' or token[0] == 'tk_menor' or token[0] == 'tk_igual_que' or token[0] == 'tk_mayor' or token[0] == 'tk_resta' or token[0] == 'tk_potenciacion' or token[0] == 'tk_modulo' or token[0] == 'tk_division' or token[0] == 'tk_suma' or token[0] == 'tk_mayor_igual' : 
         OPER()
         EXPRE()
     else: pass
@@ -422,7 +437,7 @@ def SUBRUTINAS():
         SUBRUTINAS()
     else: pass
 def REF2(): 
-    if  token[0] == 'ref' or token[0] == 'id' : 
+    if  token[0] == 'id' or token[0] == 'ref' : 
         REF()
         EXPRESUB()
         REF2()
