@@ -8,7 +8,8 @@ tokens_especiales2 = {
          'tk_llave_izquierda': '{' ,       'tk_mayor': '>',                 'tk_mayor_igual': '>=',
           'tk_menor': '<',                 'tk_menor_igual': '<=',          'tk_modulo': '%',           'tk_multiplicacion': '*',
           'tk_parentesis_derecho': ')',   'tk_parentesis_izquierdo': '(',   'tk_potenciacion': '^',
-         'tk_punto': '.' ,                'tk_punto_y_coma': ';',          'tk_resta': '-',            'tk_suma': '+'
+         'tk_punto': '.' ,                'tk_punto_y_coma': ';',          'tk_resta': '-',            'tk_suma': '+',
+         "id": 'id'
         }
 
 def get_tokens():
@@ -174,7 +175,7 @@ def get_tokens():
                     continue
 
                 # Se verifica si la cadena hasta el momento cumple con determinado tipo de token:
-                elif identificadores.fullmatch(cadena) and numero_caracteres<33 :
+                elif identificadores.fullmatch(cadena)  :
                     tipo_token = 'id'
                     continue
                 elif posible_numero.fullmatch(cadena):

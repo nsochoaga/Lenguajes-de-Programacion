@@ -7,13 +7,12 @@ palabras_reservadas = [
     'TRUE', 'FALSE', 'SI', 'NO', 'leer', 'cadena', 'dim', 'int', 'cos', 'sin', 'cls', 'set_ifs', 
     'abs', 'arctan', 'ascii','dec', 'eof', 'exp', 'get_ifs', 'inc', 'log', 'lower', 'mem',
     'ord', 'paramval', 'pcount', 'pos', 'random', 'sec', 'set_stdin', 'set_stdout', 'sqrt',
-    'str', 'strdup', 'strlen', 'substr', 'upper', 'val', 'alen', 'tk_numero', 'tk_cadena', 'id'
+    'str', 'strdup', 'strlen', 'substr', 'upper', 'val', 'alen', 'tk_numero', 'tk_cadena', 'id','tk_numero',"tk_cadena"
 ]
 
 #Un diccionario para acceder al nombre de cada token especial
 tokens_especiales =[    
     "tk_asignacion",
-    "tk_cadena",
     "tk_coma" ,
     "tk_corchete_derecho",
     "tk_corchete_izquierdo" ,
@@ -29,14 +28,13 @@ tokens_especiales =[
     "tk_menor_igual" ,
     "tk_modulo" ,
     "tk_multiplicacion",
-    'tk_numero',
     "tk_parentesis_derecho" ,
     "tk_parentesis_izquierdo" ,
     "tk_potenciacion" ,
     "tk_punto_y_coma",
     "tk_resta" ,
-    "tk_suma" ,
-    "id"
+    "tk_suma" 
+    
 ]
 
 
@@ -46,8 +44,7 @@ gramatica = {
     'PROG':             [['programa','id'],['epsilon']],
     'ESPECIFICACION':   [['var','VAR','ESPECIFICACION'],['const','CONST','ESPECIFICACION'],['tipos','TIPOS','ESPECIFICACION'],['epsilon']],
     'VAR':              [['ID','tk_dos_puntos','RMT','PC','VAR'],['epsilon']],
-    'PC':               [['tk_punto_y_coma'],['epsilon']],
-    'CONST':            [['id','tk_asignacion','CONST2','CONST'],['epsilon']],
+    'CONST':            [['id','tk_asignacion','CONST2','PC','CONST'],['epsilon']],
     'CONST2':           [['tk_numero'],['tk_cadena'],['TRUE'],['FALSE'],['SI'],['NO']],
     'RMT':              [['TIPODATO'],
                         ['vector','tk_corchete_izquierdo','VECTOR2','tk_corchete_derecho','TIPODATO'],
@@ -56,9 +53,10 @@ gramatica = {
     'VECTOR2':          [['tk_numero'],['id'],['tk_multiplicacion']],
     'MATRIZ':          [['tk_numero','MATRIZ2'],['tk_multiplicacion','MATRIZ2']],
     'MATRIZ2':          [['tk_coma','MATRIZ'],['epsilon']],
-    'TIPODATO':         [['numerico'],['cadena'],['logico']],
+    'TIPODATO':         [['numerico'],['cadena'],['logico'],['id']],
     'REGISTRO':         [['tk_llave_izquierda','VAR','tk_llave_derecha']],
     'TIPOS':            [['id','tk_dos_puntos','RMT','TIPOS'],['epsilon']],
+    'PC':               [['tk_punto_y_coma'],['epsilon']],
     'SENTENCIAS':       [['id','IDSENTENCIA','SENTENCIAS',],
                         ['si','tk_parentesis_izquierdo','EXPRE','tk_parentesis_derecho','tk_llave_izquierda','SENTENCIAS','ELSE','tk_llave_derecha','SENTENCIAS'],
                         ['mientras', 'tk_parentesis_izquierdo','EXPRE', 'tk_parentesis_derecho', 'tk_llave_izquierda', 'SENTENCIAS', 'tk_llave_derecha','SENTENCIAS'],
@@ -70,15 +68,17 @@ gramatica = {
                         ['dim','tk_parentesis_izquierdo','LEER','tk_parentesis_derecho','SENTENCIAS'],
                         ['cls','tk_parentesis_izquierdo','tk_parentesis_derecho','SENTENCIAS'],
                         ['epsilon']],
-    'IDSENTENCIA':      [['ASIGID','EXPRE'],['tk_parentesis_izquierdo','ARGUMENTOS','tk_parentesis_derecho']],
+    'IDSENTENCIA':      [['ASIGID','INT'],['tk_parentesis_izquierdo','ARGUMENTOS','tk_parentesis_derecho']],
+    'INT':              [['int','EXPRE'],['EXPRE']],
     'LEER':             [['id','LEER2'],['tk_cadena']],
     'LEER2':            [['tk_corchete_izquierdo','LEER3','tk_corchete_derecho'],['tk_coma','LEER'],['epsilon']],
     'LEER3':            [['id'],['tk_numero']],
     'IMPRIMIR':         [['IDV','IMPRIMIR2'],['tk_numero','IMPRIMIR2'],['tk_cadena','IMPRIMIR2']],
     'IMPRIMIR2':        [['tk_coma','IMPRIMIR'],['epsilon']],
     'ASIGID':           [['tk_dos_puntos'],['tk_asignacion']],
-    'EXPRE':            [['tk_parentesis_izquierdo','EXPRE','tk_parentesis_derecho'],['tk_numero','EXPRE2'],['tk_cadena'],['IDV','EXPRE2'],
+    'EXPRE':            [['tk_parentesis_izquierdo','EXPRE','tk_parentesis_derecho','LOGIC'],['tk_numero','EXPRE2'],['tk_cadena'],['IDV','EXPRE2'],
                         ['tk_llave_izquierda','LISTA','tk_llave_derecha'],['alen','tk_parentesis_izquierdo','id','tk_parentesis_derecho']],
+    'LOGIC':            [['or','EXPRE'],['epsilon']],
     'LISTA':            [['tk_numero','LISTA2'],['tk_cadena','LISTA2'],['tk_llave_izquierda','LISTA3','tk_llave_derecha','LISTA2']],
     'LISTA3':           [['tk_numero','LISTA2'],['tk_cadena','LISTA2'],['epsilon']],
     'LISTA2':           [['tk_coma','LISTA'],['epsilon']],

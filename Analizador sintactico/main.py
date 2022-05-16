@@ -35,7 +35,7 @@ def errorSintaxis(regla):
         exit()
 
 def INICIO(): 
-    if  token[0] == 'tipos' or token[0] == 'programa' or token[0] == 'const' or token[0] == 'var' : 
+    if  token[0] == 'const' or token[0] == 'var' or token[0] == 'tipos' or token[0] == 'programa' : 
         PROG()
         ESPECIFICACION()
         emparejar('inicio')
@@ -70,15 +70,12 @@ def VAR():
         PC()
         VAR()
     else: pass
-def PC(): 
-    if  token[0] == 'tk_punto_y_coma' : 
-        emparejar('tk_punto_y_coma')
-    else: pass
 def CONST(): 
     if  token[0] == 'id' : 
         emparejar('id')
         emparejar('tk_asignacion')
         CONST2()
+        PC()
         CONST()
     else: pass
 def CONST2(): 
@@ -96,7 +93,7 @@ def CONST2():
         emparejar('NO')
     else: errorSintaxis('CONST2')
 def RMT(): 
-    if  token[0] == 'cadena' or token[0] == 'logico' or token[0] == 'numerico' : 
+    if  token[0] == 'logico' or token[0] == 'id' or token[0] == 'cadena' or token[0] == 'numerico' : 
         TIPODATO()
     elif token[0] == 'vector' : 
         emparejar('vector')
@@ -142,6 +139,8 @@ def TIPODATO():
         emparejar('cadena')
     elif token[0] == 'logico' : 
         emparejar('logico')
+    elif token[0] == 'id' : 
+        emparejar('id')
     else: errorSintaxis('TIPODATO')
 def REGISTRO(): 
     if  token[0] == 'tk_llave_izquierda' : 
@@ -155,6 +154,10 @@ def TIPOS():
         emparejar('tk_dos_puntos')
         RMT()
         TIPOS()
+    else: pass
+def PC(): 
+    if  token[0] == 'tk_punto_y_coma' : 
+        emparejar('tk_punto_y_coma')
     else: pass
 def SENTENCIAS(): 
     if  token[0] == 'id' : 
@@ -233,14 +236,21 @@ def SENTENCIAS():
         SENTENCIAS()
     else: pass
 def IDSENTENCIA(): 
-    if  token[0] == 'tk_dos_puntos' or token[0] == 'tk_asignacion' : 
+    if  token[0] == 'tk_asignacion' or token[0] == 'tk_dos_puntos' : 
         ASIGID()
-        EXPRE()
+        INT()
     elif token[0] == 'tk_parentesis_izquierdo' : 
         emparejar('tk_parentesis_izquierdo')
         ARGUMENTOS()
         emparejar('tk_parentesis_derecho')
     else: errorSintaxis('IDSENTENCIA')
+def INT(): 
+    if  token[0] == 'int' : 
+        emparejar('int')
+        EXPRE()
+    elif token[0] == 'tk_parentesis_izquierdo' or token[0] == 'tk_llave_izquierda' or token[0] == 'tk_numero' or token[0] == 'alen' or token[0] == 'id' or token[0] == 'tk_cadena' : 
+        EXPRE()
+    else: errorSintaxis('INT')
 def LEER(): 
     if  token[0] == 'id' : 
         emparejar('id')
@@ -290,6 +300,7 @@ def EXPRE():
         emparejar('tk_parentesis_izquierdo')
         EXPRE()
         emparejar('tk_parentesis_derecho')
+        LOGIC()
     elif token[0] == 'tk_numero' : 
         emparejar('tk_numero')
         EXPRE2()
@@ -308,6 +319,11 @@ def EXPRE():
         emparejar('id')
         emparejar('tk_parentesis_derecho')
     else: errorSintaxis('EXPRE')
+def LOGIC(): 
+    if  token[0] == 'or' : 
+        emparejar('or')
+        EXPRE()
+    else: pass
 def LISTA(): 
     if  token[0] == 'tk_numero' : 
         emparejar('tk_numero')
@@ -341,7 +357,7 @@ def EXPRE2():
     elif token[0] == 'tk_multiplicacion' : 
         emparejar('tk_multiplicacion')
         EXPRE3()
-    elif token[0] == 'tk_menor_igual' or token[0] == 'tk_menor' or token[0] == 'tk_igual_que' or token[0] == 'tk_mayor' or token[0] == 'tk_resta' or token[0] == 'tk_potenciacion' or token[0] == 'tk_modulo' or token[0] == 'tk_division' or token[0] == 'tk_suma' or token[0] == 'tk_mayor_igual' : 
+    elif token[0] == 'tk_mayor' or token[0] == 'tk_resta' or token[0] == 'tk_division' or token[0] == 'tk_menor' or token[0] == 'tk_mayor_igual' or token[0] == 'tk_igual_que' or token[0] == 'tk_modulo' or token[0] == 'tk_potenciacion' or token[0] == 'tk_suma' or token[0] == 'tk_menor_igual' : 
         OPER()
         EXPRE()
     else: pass
@@ -437,7 +453,7 @@ def SUBRUTINAS():
         SUBRUTINAS()
     else: pass
 def REF2(): 
-    if  token[0] == 'id' or token[0] == 'ref' : 
+    if  token[0] == 'ref' or token[0] == 'id' : 
         REF()
         EXPRESUB()
         REF2()
@@ -470,7 +486,7 @@ def VALOREF():
         EXPRE()
         emparejar('tk_parentesis_derecho')
         emparejar('fin')
-    elif token[0]=='inicio' or token[0] == 'tipos' or token[0] == 'const' or token[0] == 'var' : 
+    elif token[0]=='inicio' or  token[0] == 'const' or token[0] == 'var' or token[0] == 'tipos' : 
         REFSUB()
         emparejar('inicio')
         SENTENCIAS()
