@@ -1,0 +1,29 @@
+Proceso mi_proceso
+
+    Definir matriz, i, j como entero;
+    dimension matriz[3, 3];
+
+    para i<-0 hasta 2 hacer
+
+        para j<-0 hasta 2 hacer
+
+            leer matriz[i, j];
+
+        finPARA
+
+    FinPaRA
+
+    escribir "----------";
+
+
+    para i<-0 hasta 2 hacer
+
+            para j<-0 hasta 2 hacer
+
+                escribir matriz[i, j];
+
+            finPARA
+
+        FinPaRA
+
+FinProceso

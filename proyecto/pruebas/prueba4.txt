@@ -1,0 +1,12 @@
+algoritmo algo
+    definir i, x como entero;
+    x <- 34;
+    definir z como real;
+    z <- x;
+    escribir z;
+
+    para i<-2 hasta 16 con paso 1+1 hacer
+        escribir i;
+    finpara
+
+finalgoritmo

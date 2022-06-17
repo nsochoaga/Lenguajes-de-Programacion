@@ -1,0 +1,11 @@
+algoritmo algo
+
+    definir n como entero;
+    n <- 100;
+
+    mientras n>0 hacer
+        escribir n;
+        n <- n-1;
+    finmientras
+
+finalgoritmo

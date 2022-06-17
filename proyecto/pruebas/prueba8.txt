@@ -1,0 +1,15 @@
+proceso mi_proceso
+   definir a como Real;
+   DEFINIR i como ENtero;
+   dimension a[100];
+
+   a[0] <- 1;
+
+   para i<-1 hasta 99 hacer
+       a[i] <- i*a[i-1];
+       escribir a[i];
+   finpara
+
+   escribir "Fin del programa";
+
+finproceso

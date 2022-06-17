@@ -1,0 +1,15 @@
+subproceso s <- mostrar
+    definir s como logico;
+    s <- verdadero;
+finsubproceso
+
+algoritmo algo
+    definir asd como logico;
+    //definir x como logico;
+    dimension asd[10, 10];
+    asd[0, 0] <- verdadero y falso;
+    asd[0, 1] <- falso o verdadero ;
+    //x <- asd[0, 0];
+    //escribir "X es:", x;
+    escribir mostrar();
+finalgoritmo

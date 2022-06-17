@@ -1,0 +1,20 @@
+algoritmo algo
+
+    definir a como entero;
+    a <- 36;
+
+    definir c como entero;
+    c <- 12*3;
+
+    segun a hacer
+        caso c:
+            escribir "Treinta y seis";
+        caso 2:
+            escribir "Dos";
+        caso 48/6:
+            escribir "Ocho";
+        de otro modo:
+            escribir "Opcion no valida";
+    finsegun
+
+finalgoritmo

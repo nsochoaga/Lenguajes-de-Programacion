@@ -1,0 +1,17 @@
+subproceso s <- factorial(x)
+    definir s como entero;
+
+    si x=1 entonces
+        s <- 1;
+    sino
+        s <- factorial(x-1) * x;
+    finsi
+
+finsubproceso
+
+algoritmo algo
+    definir z como entero;
+    z <- 7;
+    escribir factorial(z);
+
+finalgoritmo

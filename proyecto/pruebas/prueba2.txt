@@ -1,0 +1,20 @@
+subproceso s <- negar
+    definir s como logico;
+    s <- verdadero;
+finsubproceso
+
+subproceso s <- mostrar(x)
+    definir s como entero;
+    s <- x+60;
+finsubproceso
+
+algoritmo algo
+    definir x como logico;
+    definir s como entero;
+    dimension x[3, 3, 3];
+    dimension s[4];
+    s[2] <- 56;
+    x[0, 0, 0] <- verdadero;
+    x [1, 1, 1] <- verdadero;
+    escribir x[0,0,0] y x[1, 1, 1] y negar();
+finalgoritmo
