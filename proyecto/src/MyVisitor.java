@@ -6,23 +6,15 @@ INTEGRANTES:
 
 */
 
+import java.awt.*;
 import java.lang.Math;
-import java.lang.reflect.Array;
 import java.util.*;
-import java.awt.Dimension;
-import javax.swing.JFrame;
-import edu.uci.ics.jung.algorithms.layout.CircleLayout;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.SparseMultigraph;
-import edu.uci.ics.jung.graph.event.GraphEvent;
-import edu.uci.ics.jung.visualization.VisualizationImageServer;
-import edu.uci.ics.jung.visualization.renderers.Renderer;
+import java.util.List;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 
 
 public class MyVisitor<T> extends pseIntBaseVisitor<T> {
-    DirectedSparseGraph g = new DirectedSparseGraph();
-    int name = 0;
     private HashMap<String, pseIntParser.SubprocesoContext> functions = new HashMap<>();
     private HashMap<String, String> functionReturns = new HashMap<>();
     private HashMap<String, Object> variables = new HashMap<>();
@@ -31,6 +23,20 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
     private List<String> vertices = new ArrayList<>();
 
     private Scanner scan = new Scanner(System.in);
+
+    private double x0 = 0.1;
+    private double y0 = 0.9;
+    private double a0 = 0.0;
+    private double step = 0.07;
+
+    double x_error;
+    double y_error;
+
+    private final double radius = 0.01;
+
+
+    private Turtle turtle = new Turtle(x0, y0, a0);
+    private Turtle turtleMain = new Turtle(x0, y0, a0);
 
     @Override public T visitStart(pseIntParser.StartContext ctx) {
         return visitChildren(ctx);
@@ -74,34 +80,41 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
         return visitChildren(ctx);
     }
 
-    @Override public T visitFinproceso(pseIntParser.FinprocesoContext ctx) { return visitChildren(ctx); }
+    @Override public T visitFinproceso(pseIntParser.FinprocesoContext ctx) {
+        turtleMain.setPenColor(Color.GREEN);
+        turtleMain.filledCircle(turtleMain.getX(), turtle.getY(), radius*2);
+        turtleMain.text(turtleMain.getX(), turtleMain.getY()+0.03, "FINALIZADO \n CORRECTAMENTE", Color.BLACK);
+        return visitChildren(ctx); }
 
     @Override public T visitIniciosubproceso(pseIntParser.IniciosubprocesoContext ctx) {
 
         return visitChildren(ctx);
     }
 
-    @Override public T visitFinsubproceso(pseIntParser.FinsubprocesoContext ctx) { return visitChildren(ctx); }
+    @Override public T visitFinsubproceso(pseIntParser.FinsubprocesoContext ctx) {
+        return visitChildren(ctx); }
 
     @Override public T visitSubproceso(pseIntParser.SubprocesoContext ctx) {
 
-        vertices.add(ctx.ID(1).toString());
-        System.out.println("creando vertice " +ctx.ID(1).toString());
-        g.addVertex(vertices.get(vertices.size()-1));
 
         if (ctx.iniciosubproceso() != null) {
+
+
+
             int NID = (ctx.TOKEN_ASIG() != null) ? 1 : 0;
             String id = ctx.ID(NID).getText();
             String ret = (ctx.TOKEN_ASIG() != null) ? ctx.ID(0).getText() : null;
 
             if (functions.get(id) != null) error("La función ya ha sido declarada anteriormente",
                                                  ctx.ID(NID).getSymbol().getLine(),
-                                                 ctx.ID(NID).getSymbol().getCharPositionInLine() + 1);
+                                                 ctx.ID(NID).getSymbol().getCharPositionInLine() + 1, x_error, y_error );
 
             functions.put(id, ctx);
             functionReturns.put(id, ret);
 
-            if (!ctx.subproceso().getText().isBlank()) visitSubproceso(ctx.subproceso());
+            if (!ctx.subproceso().getText().isBlank()) {
+                visitSubproceso(ctx.subproceso());
+            }
         }
 
         return null;
@@ -122,12 +135,18 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
     }
 
     @Override public T visitProceso(pseIntParser.ProcesoContext ctx) {
-        vertices.add(ctx.ID().toString());
-        System.out.println("creando vertice " + ctx.ID().toString());
-        g.addVertex(ctx.ID().toString());
 
+        System.out.println("ENTRA A PROCESOOOOOOO");
+        turtle.setPenColor(Color.BLACK);
+        turtle.filledCircle(turtle.getX(), turtle.getY(), radius);
+        System.out.println("x: " + turtle.getX() + "    y: " + turtle.getY());
+        turtle.text(x0-0.05, y0-0.03, ctx.ID().getText(), Color.BLACK);
+        turtle.goForward(step);
+        turtleMain.goForward(step);
+        turtle.show();
 
-        return visitChildren(ctx); }
+        return visitChildren(ctx);
+    }
 
     @Override public T visitComandos(pseIntParser.ComandosContext ctx) { return visitChildren(ctx); }
 
@@ -169,7 +188,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
         if (!variables.containsKey(id)) error("La variable no ha sido declarada.",
                                               ctx.ID().getSymbol().getLine(),
-                                              ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                              ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
         ArrayList<Object> dimensiones = (ArrayList<Object>) visitMatrix(ctx.matrix());
 
@@ -235,12 +254,12 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
             else {
                 error("Las dimensiones definidas están fuera de rango.",
                         ctx.ID().getSymbol().getLine(),
-                        ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                        ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
             }
 
         } catch (Exception e) {
 
-            error("Indices del arreglo fuera de limites", ctx.ID().getSymbol().getLine(), ctx.ID().getSymbol().getCharPositionInLine() + 1);
+            error("Indices del arreglo fuera de limites", ctx.ID().getSymbol().getLine(), ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
         }
 
@@ -296,7 +315,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
             } else if (!indices.get(i).getClass().equals(Double.class)) {
 
-                error("Indice no numerico", ctx.TOKEN_COR_DER().getSymbol().getLine(), ctx.TOKEN_COR_DER().getSymbol().getCharPositionInLine() + 1);
+                error("Indice no numerico", ctx.TOKEN_COR_DER().getSymbol().getLine(), ctx.TOKEN_COR_DER().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
             }
 
@@ -307,13 +326,41 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
     @Override public T visitFunc(pseIntParser.FuncContext ctx) {
 
+        Turtle turtle1 = new Turtle(turtle.getX(), turtle.getY(), a0);
+
+        turtle.setPenColor(Color.GREEN);
+        turtle.turnLeft(270);
+        turtle.goForward(step);
+        turtle.filledCircle(turtle.getX(), turtle.getY(), radius);
+        x_error = turtle.getX();
+        y_error = turtle.getY();
+        turtle.text(turtle.getX()-0.05, turtle.getY()-0.03, ctx.ID().getText(), Color.BLUE);
+        turtle.setPenColor(Color.GREEN);
+        turtle.turnLeft(90);
+        turtle.goForward(step);
+        turtle1.goForward(step);
+        turtleMain.setPenColor(Color.BLACK);
+        turtleMain.goForward(step);
+
+        ParserRuleContext padres = ctx.getParent();
+        while (!padres.getStart().getText().equals("subproceso")  && !padres.getStart().getText().equals("algoritmo") && !padres.getStart().getText().equals("proceso")){
+            padres = padres.getParent();
+        }
+
+        if (padres.getStart().getText().equals("subproceso")) {
+            System.out.println("ID   " + ctx.ID().getText());
+            System.out.println(padres.getTokens(80));
+        }
+
+
+
 
         String id = ctx.ID().getText();
 
         //g.addEdge(id,"vertex0","vertex1");
-        if (functions.get(id) == null) error("Las función no ha sido declarada.",
+        if (functions.get(id) == null) error("La función no ha sido declarada.",
                                              ctx.ID().getSymbol().getLine(),
-                                             ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                             ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
         pseIntParser.SubprocesoContext functionCtx = functions.get(id);
 
@@ -325,11 +372,11 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
         if (llamarFuncionParametros.size() < parametros.size()) error("Faltan parámetros en la función.",
                                                                       ctx.ID().getSymbol().getLine(),
-                                                                      ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                                                      ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
         if (llamarFuncionParametros.size() > parametros.size()) error("Sobran parámetros en la función.",
                                                                       ctx.ID().getSymbol().getLine(),
-                                                                      ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                                                      ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
         HashMap<String, Object> copia_variables = new HashMap<>();
         HashMap<String, String> copia_tipoVariables = new HashMap<>();
@@ -360,23 +407,9 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
         tiposVariables.clear();
         tiposVariables = copyMap(copia_tipoVariables);
-        ParserRuleContext padres = ctx.getParent();
-        while (!padres.getStart().getText().equals("subproceso")  && !padres.getStart().getText().equals("algoritmo") && !padres.getStart().getText().equals("proceso")){
-            padres = padres.getParent();
-        }
-
-        if (padres.getStart().getText().equals("subproceso")){
-            g.addEdge("llama "+name,padres.getTokens(80).get(1).getText(),ctx.ID().getText());
-            name ++;
-            System.out.println(padres.getTokens(80));
-        }else{
-            g.addEdge("llama "+name,padres.getTokens(80).get(0).getText(),ctx.ID().getText());
-            name ++;
-            System.out.println(padres.getTokens(80));
-        }
 
 
-
+        retornar();
         return (T) valorRetornado;
     }
 
@@ -393,7 +426,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
         if (!variables.containsKey(id)) error("La variable " + id + " no ha sido declarada.",
                                               ctx.ID().getSymbol().getLine(),
-                                              ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                              ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
         String tipo = tiposVariables.get(id);
         T valor;
@@ -412,7 +445,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
                     else {
                         error("Tipos de datos erróneos",
                               ctx.ID().getSymbol().getLine(),
-                              ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                              ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
                     }
                 } else if (tipo.equals("numerico") || tipo.equals("real")) {
                     if (valor.getClass().equals(Double.class)) {
@@ -424,7 +457,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
                     else {
                         error("Tipos de datos erróneos",
                               ctx.ID().getSymbol().getLine(),
-                              ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                              ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
                     }
                 }
                 else if (tipo.equals("logico")) {
@@ -436,7 +469,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
             } catch (Exception e) {
                 error("El valor asignado no corresponde al tipo de la variable",
                       ctx.ID().getSymbol().getLine(),
-                      ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                      ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
             }
         }
         else {
@@ -487,13 +520,23 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
             } catch (Exception e) {
 
-                error("Indices del arreglo fuera de limites", ctx.ID().getSymbol().getLine(), ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                error("Indices del arreglo fuera de limites", ctx.ID().getSymbol().getLine(), ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
             }
 
         }
 
         return visitChildren(ctx);
+    }
+
+    public void retornar() {
+        turtle.setPenColor(Color.green);
+        turtle.turnLeft(90);
+        turtle.goForward(step);
+        turtle.turnLeft(270);
+        turtle.goForward(step);
+        turtleMain.setPenColor(Color.BLACK);
+        turtleMain.goForward(step);
     }
 
     @Override public T visitBool1(pseIntParser.Bool1Context ctx) {
@@ -538,7 +581,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
             catch (Exception e) {
                 error("Operación lógica ilegal",
                         ctx.ID().getSymbol().getLine(),
-                        ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                        ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
             }
 
         }
@@ -547,7 +590,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
             error("La función no retorna un valor lógico",
                     ctx.ID().getSymbol().getLine(),
-                    ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                    ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
         }
         else if (ctx.ID() != null) {
 
@@ -555,14 +598,14 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
             if (!variables.containsKey(id)) error("La variable no ha sido declarada",
                                                   ctx.ID().getSymbol().getLine(),
-                                                  ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                                  ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
             if (ctx.matrix() == null) {
                 if (variables.get(id).getClass().equals(Boolean.class))  return (T) variables.get(id);
 
                 error("La matriz no es de valores lógicos",
                         ctx.ID().getSymbol().getLine(),
-                        ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                        ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
             }
             else {
                 ArrayList<Object> indices = (ArrayList<Object>) visitMatrix(ctx.matrix());
@@ -577,11 +620,11 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
                     error("La variable no es de valores lógicos",
                             ctx.ID().getSymbol().getLine(),
-                            ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                            ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
                 } catch (Exception e) {
 
-                    error("Indices del arreglo fuera de limites", ctx.ID().getSymbol().getLine(), ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                    error("Indices del arreglo fuera de limites", ctx.ID().getSymbol().getLine(), ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
                 }
 
@@ -610,7 +653,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
             catch (Exception e) {
                 error("La variable no es de valores lógicos",
                         ctx.start.getLine(),
-                        ctx.start.getCharPositionInLine() + 1);
+                        ctx.start.getCharPositionInLine() + 1, x_error, y_error);
             }
         }
         else {
@@ -638,7 +681,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
             catch (Exception e) {
                 error("Lo suminstrado no corresponde a valores operables",
                         ctx.start.getLine(),
-                        ctx.start.getCharPositionInLine() + 1);
+                        ctx.start.getCharPositionInLine() + 1, x_error, y_error);
             }
         }
         else {
@@ -666,7 +709,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
             catch (Exception e) {
                 error("Lo suminstrado no corresponde a valores operables",
                         ctx.start.getLine(),
-                        ctx.start.getCharPositionInLine() + 1);
+                        ctx.start.getCharPositionInLine() + 1, x_error, y_error);
             }
         }
         else {
@@ -693,7 +736,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
             catch (Exception e) {
                 error("Lo suminstrado no corresponde a valores operables",
                         ctx.start.getLine(),
-                        ctx.start.getCharPositionInLine() + 1);
+                        ctx.start.getCharPositionInLine() + 1, x_error, y_error);
             }
         } else {
             return visitArit5(ctx.arit5());
@@ -717,7 +760,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
             catch (Exception e) {
                 error("Lo suminstrado no corresponde a valores operables",
                         ctx.start.getLine(),
-                        ctx.start.getCharPositionInLine() + 1);
+                        ctx.start.getCharPositionInLine() + 1, x_error, y_error);
             }
         } else {
             return visitArit6(ctx.arit6());
@@ -732,7 +775,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
             if (!variables.containsKey(id)) error("La variable no ha sido declarada",
                                                    ctx.ID().getSymbol().getLine(),
-                                                   ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                                   ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
             if (ctx.matrix() == null) return (T) variables.get(id);
 
@@ -762,7 +805,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
             } catch (Exception e) {
 
-                error("Indices del arreglo fuera de limites", ctx.ID().getSymbol().getLine(), ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                error("Indices del arreglo fuera de limites", ctx.ID().getSymbol().getLine(), ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
             }
 
@@ -827,7 +870,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
                                 } catch (Exception d) {
 
-                                    error("Indices del arreglo fuera de limites", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1);
+                                    error("Indices del arreglo fuera de limites", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
                                 }
 
@@ -860,7 +903,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
                                 } catch (Exception d) {
 
-                                    error("Valor no valido para la variable", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1);
+                                    error("Valor no valido para la variable", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
                                 }
 
@@ -888,7 +931,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
                                 boolvalue = false;
                             } else {
 
-                                error("Valor no valido para la variable", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1);
+                                error("Valor no valido para la variable", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
                             }
 
@@ -904,13 +947,13 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
                     } catch (Exception e) {
 
-                        error("Indice del arreglo fuera de limites", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1);
+                        error("Indice del arreglo fuera de limites", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
                     }
 
                 } else {
 
-                    error("La variable no ha sido declarada", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1);
+                    error("La variable no ha sido declarada", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
 
                 }
@@ -935,7 +978,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
                             } catch (Exception d) {
 
-                                error("Valor no valido para la variable", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1);
+                                error("Valor no valido para la variable", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
                             }
 
@@ -956,7 +999,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
                             } catch (Exception d) {
 
-                                error("Valor no valido para la variable", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1);
+                                error("Valor no valido para la variable", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1,x_error, y_error);
 
                             }
 
@@ -974,14 +1017,14 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
                             variables.put(id, false);
                         } else {
 
-                            error("Valor no valido para la variable", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1);
+                            error("Valor no valido para la variable", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
                         }
 
                     }
 
                 } else {
 
-                    error("La variable no ha sido declarada", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1);
+                    error("La variable no ha sido declarada", ctx.LEER().getSymbol().getLine(), ctx.LEER().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
                 }
 
@@ -1033,7 +1076,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
         if (!variables.containsKey(id)) error("La variable no ha sido declarada",
                                                ctx.ID().getSymbol().getLine(),
-                                               ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                               ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
         String tipo = tiposVariables.get(id);
         T valor_inicial = visitArit1(ctx.arit1(0));
@@ -1048,20 +1091,20 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
                 else if (pasoResult.getClass().equals(Double.class))  paso = (int) Math.round( (Double) pasoResult);
                 else                                                  error("Tipo de dato erroneo",
                                                                             ctx.ID().getSymbol().getLine(),
-                                                                            ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                                                            ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
             }
 
             if (valor_inicial.getClass().equals(Integer.class))     variables.put(id, (Integer) valor_inicial);
             else if (valor_inicial.getClass().equals(Double.class)) variables.put(id, (int) Math.round( (Double) valor_inicial));
             else                                                    error("Tipo de dato erroneo",
                                                                           ctx.ID().getSymbol().getLine(),
-                                                                          ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                                                          ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
             if (valor_final.getClass().equals(Integer.class))     valor_final = (T) (Integer) valor_final;
             else if (valor_final.getClass().equals(Double.class)) valor_final = (T) (Integer) (int) Math.round( (Double) valor_final);
             else                                                  error("Tipo de dato erroneo",
                                                                   ctx.ID().getSymbol().getLine(),
-                                                                  ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                                                  ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
             while ((Integer) variables.get(id) <= (Integer) valor_final) {
                 visitComandos(ctx.comandos());
@@ -1078,20 +1121,20 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
                 else if (pasoResult.getClass().equals(Integer.class)) paso = Double.valueOf((Integer) pasoResult);
                 else                                                  error("Tipo de dato erroneo",
                                                                             ctx.ID().getSymbol().getLine(),
-                                                                            ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                                                            ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
             }
 
             if (valor_inicial.getClass().equals(Double.class)) variables.put(ctx.ID().getText(), (Double) valor_inicial);
             else if (valor_inicial.getClass().equals(Integer.class)) variables.put(ctx.ID().getText(), (double) (Integer) valor_inicial);
             else                                                      error("Tipo de dato erroneo",
                                                                             ctx.ID().getSymbol().getLine(),
-                                                                            ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                                                            ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
             if (valor_final.getClass().equals(Double.class))       valor_final = (T) (Double) valor_final;
             else if (valor_final.getClass().equals(Integer.class)) valor_final = (T) Double.valueOf((Integer) valor_final);
             else                                                   error("Tipo de dato erroneo",
                                                                          ctx.ID().getSymbol().getLine(),
-                                                                         ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                                                         ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
             while ((Double) variables.get(id) <= (Double) valor_final) {
                 visitComandos(ctx.comandos());
@@ -1100,7 +1143,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
         }
         else error("Tipo de dato no operable aritméticamente",
                     ctx.ID().getSymbol().getLine(),
-                    ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                    ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
         return null;
     }
@@ -1132,7 +1175,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
             if (!variables.containsKey(id)) error("La variable no ha sido declarada",
                                                    ctx.ID().getSymbol().getLine(),
-                                                   ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                                                   ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
             if (ctx.matrix() == null) value = (T) variables.get(id);
             else {
@@ -1164,7 +1207,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
                 } catch (Exception e) {
 
-                    error("Indices del arreglo fuera de limites", ctx.ID().getSymbol().getLine(), ctx.ID().getSymbol().getCharPositionInLine() + 1);
+                    error("Indices del arreglo fuera de limites", ctx.ID().getSymbol().getLine(), ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
 
                 }
             }
@@ -1214,11 +1257,15 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
     @Override public T visitLimpieza(pseIntParser.LimpiezaContext ctx) { return visitChildren(ctx); }
 
-    private void error(String error, int row, int col) {
+    private void error(String error, int row, int col, double x, double y) {
         System.out.printf("<%d, %d> Error semántico. %s\n", row, col, error);
-        System.exit(-1);
+        turtle.text(x+0.25, y+0.02, error, Color.red);
+        turtle.filledCircle(x, y, radius);
+        Turtle err = new Turtle(x,y, a0);
+        err.goForward(step*3);
+
+        while (true);
+        //System.exit(-1);
     }
-    public DirectedSparseGraph grafofinal (){
-        return g;
-    }
+
 }
