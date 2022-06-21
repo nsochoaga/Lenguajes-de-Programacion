@@ -1,11 +1,3 @@
-/*
-INTEGRANTES:
-
-- Juan Diego Castañeda Oviedo
-- Josué David Briceño Urquijo
-
-*/
-
 import java.awt.*;
 import java.lang.Math;
 import java.util.*;
