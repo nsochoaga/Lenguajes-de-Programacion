@@ -57,6 +57,7 @@ import java.util.NoSuchElementException;
 import javax.imageio.ImageIO;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 
 /**
  *  The {@code StdDraw} class provides a basic capability for
@@ -689,8 +690,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 
 
-        offscreenImage = new BufferedImage(5*width, 3*height, BufferedImage.TYPE_INT_ARGB);
-        onscreenImage  = new BufferedImage(5*width, 3*height, BufferedImage.TYPE_INT_ARGB);
+        offscreenImage = new BufferedImage(7*width, 3*height, BufferedImage.TYPE_INT_ARGB);
+        onscreenImage  = new BufferedImage(7*width, 3*height, BufferedImage.TYPE_INT_ARGB);
         offscreen = offscreenImage.createGraphics();
         onscreen  = onscreenImage.createGraphics();
         offscreen.scale(2.0, 2.0);  // since we made it 2x as big
@@ -698,7 +699,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         setXscale();
         setYscale();
         offscreen.setColor(DEFAULT_CLEAR_COLOR);
-        offscreen.fillRect(0, 0, width*5, height*3);
+        offscreen.fillRect(0, 0, width*7, height*3);
         setPenColor();
         setPenRadius();
         setFont();
@@ -720,18 +721,22 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
         draw.addMouseListener(std);
         draw.addMouseMotionListener(std);
+        draw.add(createButton());
+        draw.add(startButton());
 
+        JScrollPane scroll = new JScrollPane(draw, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setBounds(0, 20, width*2, height);
 
-
-        frame.setContentPane(draw);
+        frame.setLayout(new GridLayout());
+        frame.setPreferredSize(new Dimension(width*2,height));
+        frame.add(scroll);
         frame.addKeyListener(std);    // JLabel cannot get keyboard focus
         frame.setFocusTraversalKeysEnabled(false);  // allow VK_TAB with isKeyPressed()
         frame.setResizable(true);
+        frame.setSize(400,400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);           // closes all windows
         // frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);      // closes only current window
         frame.setTitle("Depurador gráfico PSEInt");
-        frame.add(createButton());
-        frame.add(startButton());
         frame.setJMenuBar(createMenuBar());
         frame.pack();
         frame.requestFocusInWindow();
