@@ -1,11 +1,3 @@
-/*
-INTEGRANTES:
-
-- Juan Diego Castañeda Oviedo
-- Josué David Briceño Urquijo
-
-*/
-
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
