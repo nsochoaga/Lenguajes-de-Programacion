@@ -421,7 +421,11 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
         tiposVariables = copyMap(copia_tipoVariables);
 
 
-        retornar();
+        double fin =  retornar();
+        double pasoFin = fin - turtle1.getX();
+        turtle1.setPenColor(Color.GREEN);
+        turtle1.goForward(pasoFin);
+
         return (T) valorRetornado;
     }
 
@@ -541,7 +545,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
         return visitChildren(ctx);
     }
 
-    public void retornar() {
+    public double retornar() {
         turtle.setPenColor(Color.green);
         turtle.turnLeft(90);
         turtle.goForward(step);
@@ -549,6 +553,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
         turtle.goForward(step);
         turtleMain.setPenColor(Color.BLACK);
         turtleMain.goForward(step);
+        return turtle.getX();
     }
 
     @Override public T visitBool1(pseIntParser.Bool1Context ctx) {
