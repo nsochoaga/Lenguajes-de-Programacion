@@ -25,9 +25,10 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
     private Scanner scan = new Scanner(System.in);
 
     private double x0 = 0.1;
-    private double y0 = 0.9;
+    private double y0 = 0.8;
     private double a0 = 0.0;
     private double step = 0.07;
+
 
     double x_error;
     double y_error;
@@ -139,8 +140,9 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
         System.out.println("ENTRA A PROCESOOOOOOO");
         turtle.setPenColor(Color.BLACK);
         turtle.filledCircle(turtle.getX(), turtle.getY(), radius);
+
         System.out.println("x: " + turtle.getX() + "    y: " + turtle.getY());
-        turtle.text(x0-0.05, y0-0.03, ctx.ID().getText(), Color.BLACK);
+        turtle.text(x0-0.05, y0-0.05, ctx.ID().getText(), Color.BLACK);
         turtle.goForward(step);
         turtleMain.goForward(step);
         turtle.show();
@@ -327,6 +329,16 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
     @Override public T visitFunc(pseIntParser.FuncContext ctx) {
 
         Turtle turtle1 = new Turtle(turtle.getX(), turtle.getY(), a0);
+
+        if(!StdDraw.isStart()) {
+            while(!StdDraw.isPaso()){
+                turtle.pause(100);
+            }
+            StdDraw.Paso(false);
+        }
+
+
+
 
         turtle.setPenColor(Color.GREEN);
         turtle.turnLeft(270);

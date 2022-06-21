@@ -572,6 +572,26 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
     // current pen radius
     private static double penRadius;
 
+    private static boolean paso = false;
+
+    public static boolean isPaso() {
+        return paso;
+    }
+
+    public static void Paso(boolean paso2) {
+        paso = paso2;
+    }
+
+    private static  boolean start = false;
+
+    public static boolean isStart() {
+        return start;
+    }
+
+    public static void setStart(boolean start) {
+        StdDraw.start = start;
+    }
+
     // show we draw immediately or wait until next show?
     private static boolean defer = false;
 
@@ -618,6 +638,13 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
     // singleton pattern: client can't instantiate
     private StdDraw() { }
 
+    public static StdDraw getStd() {
+        return std;
+    }
+
+    public static void setStd(StdDraw std) {
+        StdDraw.std = std;
+    }
 
     // static initializer
     static {
@@ -660,6 +687,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         if (frame != null) frame.setVisible(false);
         frame = new JFrame();
 
+
+
         offscreenImage = new BufferedImage(5*width, 3*height, BufferedImage.TYPE_INT_ARGB);
         onscreenImage  = new BufferedImage(5*width, 3*height, BufferedImage.TYPE_INT_ARGB);
         offscreen = offscreenImage.createGraphics();
@@ -693,6 +722,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         draw.addMouseMotionListener(std);
 
 
+
         frame.setContentPane(draw);
         frame.addKeyListener(std);    // JLabel cannot get keyboard focus
         frame.setFocusTraversalKeysEnabled(false);  // allow VK_TAB with isKeyPressed()
@@ -700,6 +730,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);           // closes all windows
         // frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);      // closes only current window
         frame.setTitle("Depurador gráfico PSEInt");
+        frame.add(createButton());
+        frame.add(startButton());
         frame.setJMenuBar(createMenuBar());
         frame.pack();
         frame.requestFocusInWindow();
@@ -720,6 +752,40 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
                 Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         menu.add(menuItem1);
         return menuBar;
+    }
+
+    public void funcion() {
+
+    }
+
+    private static JButton createButton() {
+        JButton button = new JButton(">>");
+        button.setBounds(50, 10, 100, 30);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                paso = true;
+
+            }
+        });
+        return button;
+    }
+
+    private static JButton startButton() {
+        JButton button = new JButton(">");
+        button.setBounds(200, 10, 100, 30);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if (start) start = false;
+                else start = true;
+                paso = true;
+
+            }
+        });
+        return button;
     }
 
     /***************************************************************************

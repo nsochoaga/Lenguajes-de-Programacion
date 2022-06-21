@@ -11,7 +11,7 @@ finsubproceso
 
 algoritmo algo
     definir z como entero;
-    z <- 7;
+    z <- 4;
     escribir factorial(z);
 
 finalgoritmo
