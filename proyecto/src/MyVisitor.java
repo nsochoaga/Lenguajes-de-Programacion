@@ -420,11 +420,16 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
         tiposVariables.clear();
         tiposVariables = copyMap(copia_tipoVariables);
 
-
         double fin =  retornar();
-        double pasoFin = fin - turtle1.getX();
-        turtle1.setPenColor(Color.GREEN);
-        turtle1.goForward(pasoFin);
+        if (!(padres.getStart().getType()==14) && !(padres.getStart().getType()==13) ) {
+            double pasoFin = fin - turtle1.getX();
+            turtle1.setPenColor(Color.GREEN);
+            turtle1.goForward(pasoFin);
+
+        }
+
+
+
 
         return (T) valorRetornado;
     }
