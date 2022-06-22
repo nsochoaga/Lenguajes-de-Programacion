@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.TreeSet;
 import java.util.NoSuchElementException;
@@ -58,6 +59,7 @@ import javax.imageio.ImageIO;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *  The {@code StdDraw} class provides a basic capability for
@@ -636,6 +638,14 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
     // set of key codes currently pressed down
     private static TreeSet<Integer> keysDown;
 
+    private static JTable tabla ;
+    private static DefaultTableModel tabladef;
+    private static JScrollPane tablescroll;
+
+
+    private static String datoColumna[][] ;
+    private static ArrayList<ArrayList<String>> datoC = new ArrayList<ArrayList<String>>();
+
     // singleton pattern: client can't instantiate
     private StdDraw() { }
 
@@ -690,8 +700,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 
 
-        offscreenImage = new BufferedImage(7*width, 3*height, BufferedImage.TYPE_INT_ARGB);
-        onscreenImage  = new BufferedImage(7*width, 3*height, BufferedImage.TYPE_INT_ARGB);
+        offscreenImage = new BufferedImage(10*width, 6*height, BufferedImage.TYPE_INT_ARGB);
+        onscreenImage  = new BufferedImage(10*width, 3*height, BufferedImage.TYPE_INT_ARGB);
         offscreen = offscreenImage.createGraphics();
         onscreen  = onscreenImage.createGraphics();
         offscreen.scale(2.0, 2.0);  // since we made it 2x as big
@@ -699,11 +709,22 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         setXscale();
         setYscale();
         offscreen.setColor(DEFAULT_CLEAR_COLOR);
-        offscreen.fillRect(0, 0, width*7, height*3);
+        offscreen.fillRect(0, 0, width*6, height*3);
         setPenColor();
         setPenRadius();
         setFont();
         clear();
+        datoC.add(new ArrayList<>());
+        String titColumna[]=new String[] {"Variable", "Valor"} ;
+        tabladef = new DefaultTableModel(datoColumna,titColumna);
+        tabla = new JTable(tabladef);
+
+        tabla.setShowHorizontalLines( false );
+        tabla.setRowSelectionAllowed( true );
+        tabla.setColumnSelectionAllowed( true );
+        tabla.setSelectionForeground( Color.white );
+        tabla.setSelectionBackground( Color.red );
+        tablescroll = new JScrollPane( tabla , JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         // initialize keystroke buffers
         keysTyped = new LinkedList<Character>();
@@ -723,26 +744,29 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         draw.addMouseMotionListener(std);
         draw.add(createButton());
         draw.add(startButton());
+        draw.add(tableButton());
 
         JScrollPane scroll = new JScrollPane(draw, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scroll.setBounds(0, 20, width*2, height);
+        scroll.setBounds(0, 10, width*2, height);
+        tablescroll.setBounds(0, 10, 100, 100);
 
-        frame.setLayout(new GridLayout());
-        frame.setPreferredSize(new Dimension(width*2,height));
-        frame.add(scroll);
+        frame.setLayout(new BorderLayout());
+
+        frame.add(scroll, BorderLayout.LINE_START);
+        frame.setLayout(new BorderLayout(1,1));
+        frame.getContentPane().add(tablescroll, BorderLayout.LINE_END);
         frame.addKeyListener(std);    // JLabel cannot get keyboard focus
         frame.setFocusTraversalKeysEnabled(false);  // allow VK_TAB with isKeyPressed()
         frame.setResizable(true);
-        frame.setSize(400,400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);           // closes all windows
         // frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);      // closes only current window
         frame.setTitle("Depurador gráfico PSEInt");
         frame.setJMenuBar(createMenuBar());
+        frame.setPreferredSize(new Dimension((width*3)-20,height+70));
         frame.pack();
         frame.requestFocusInWindow();
-
-
         frame.setVisible(true);
+        tablescroll.setVisible(false);
     }
 
     // create the menu bar (changed to private)
@@ -759,8 +783,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         return menuBar;
     }
 
-    public void funcion() {
-
+    public static void añadir(Object[] row) {
+        tabladef.addRow(row);
     }
 
     private static JButton createButton() {
@@ -787,6 +811,23 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
                 if (start) start = false;
                 else start = true;
                 paso = true;
+
+            }
+        });
+        return button;
+    }
+
+    private static JButton tableButton() {
+        JButton button = new JButton("hidetable");
+        button.setBounds(100, 450, 100, 30);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(tablescroll.isVisible()){
+                    tablescroll.setVisible(false);
+                }else{
+                    tablescroll.setVisible(true);
+                }
 
             }
         });

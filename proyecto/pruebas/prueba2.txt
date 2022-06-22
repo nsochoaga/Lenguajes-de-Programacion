@@ -1,11 +1,13 @@
 subproceso s <- negar
     definir s como logico;
     s <- verdadero;
+    mostrar(2)
 finsubproceso
 
 subproceso s <- mostrar(x)
     definir s como entero;
     s <- x+60;
+    negar()
 finsubproceso
 
 algoritmo algo

@@ -85,6 +85,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
     }
 
     @Override public T visitFinsubproceso(pseIntParser.FinsubprocesoContext ctx) {
+
         return visitChildren(ctx); }
 
     @Override public T visitSubproceso(pseIntParser.SubprocesoContext ctx) {
@@ -147,6 +148,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
     @Override public T visitComando(pseIntParser.ComandoContext ctx) { return visitChildren(ctx); }
 
     @Override public T visitDefinir(pseIntParser.DefinirContext ctx) {
+
         ArrayList<Object> lista = (ArrayList<Object>) visitListaIds(ctx.listaIds());
         String tipo = (String) visitTipo(ctx.tipo());
 
@@ -154,7 +156,10 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
             tiposVariables.put((String) lista.get(i), tipo);
             variables.put((String) lista.get(i), null);
         }
-
+        for (String bad: variables.keySet()){
+            System.out.println(bad);
+            System.out.println(variables.get(bad));
+        }
         return null;
     }
 
@@ -320,6 +325,13 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
     @Override public T visitFunc(pseIntParser.FuncContext ctx) {
 
+        for (String bad: variables.keySet()){
+            StdDraw.añadir(new Object[]{bad,variables.get(bad)});
+            System.out.println(bad);
+            System.out.println();
+        }
+
+
         Turtle turtle1 = new Turtle(turtle.getX(), turtle.getY(), a0);
 
         if(!StdDraw.isStart()) {
@@ -328,9 +340,6 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
             }
             StdDraw.Paso(false);
         }
-
-
-
 
         turtle.setPenColor(Color.GREEN);
         turtle.turnLeft(270);
@@ -396,18 +405,23 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
         for (int i = 0; i < parametros.size(); i++) {
             variables.put(parametros.get(i), llamarFuncionParametros.get(i));
 
+
                  if (parametros.get(i).getClass().equals(Integer.class)) tiposVariables.put(parametros.get(i), "entero");
             else if (parametros.get(i).getClass().equals(Double.class))  tiposVariables.put(parametros.get(i), "real");
             else if (parametros.get(i).getClass().equals(Boolean.class)) tiposVariables.put(parametros.get(i), "logico");
             else if (parametros.get(i).getClass().equals(String.class))  tiposVariables.put(parametros.get(i), "cadena");
+
         }
 
+
         visitComandos(functionCtx.comandos());
+
 
         Object valorRetornado = functionReturns.get(id) != null ? variables.get(functionReturns.get(id)) : null;
 
         variables.clear();
         variables = copyMap(copia_variables);
+
 
         tiposVariables.clear();
         tiposVariables = copyMap(copia_tipoVariables);
@@ -449,6 +463,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
 
             try {
                 if (tipo.equals("entero") || tipo.equals("numero")) {
+
                     if (valor.getClass().equals(Integer.class)) {
                         variables.put(ctx.ID().getText(), valor);
                     }
@@ -460,6 +475,7 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
                               ctx.ID().getSymbol().getLine(),
                               ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
                     }
+
                 } else if (tipo.equals("numerico") || tipo.equals("real")) {
                     if (valor.getClass().equals(Double.class)) {
                         variables.put(ctx.ID().getText(), valor);
@@ -472,12 +488,18 @@ public class MyVisitor<T> extends pseIntBaseVisitor<T> {
                               ctx.ID().getSymbol().getLine(),
                               ctx.ID().getSymbol().getCharPositionInLine() + 1, x_error, y_error);
                     }
+
                 }
                 else if (tipo.equals("logico")) {
                     variables.put(ctx.ID().getText(), valor);
+
                 }
                 else if (tipo.equals("cadena") || tipo.equals("caracter") || tipo.equals("texto")) {
                     variables.put(ctx.ID().getText(), (String) valor);
+                }
+                for (String bad: variables.keySet()){
+                    System.out.println(bad);
+                    System.out.println(variables.get(bad));
                 }
             } catch (Exception e) {
                 error("El valor asignado no corresponde al tipo de la variable",

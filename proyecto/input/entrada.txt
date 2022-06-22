@@ -1,17 +1,22 @@
-subproceso s <- factorial(x)
+subproceso s <- negar
+    definir s como logico;
+    s <- verdadero;
+finsubproceso
+
+subproceso s <- mostrar(x)
     definir s como entero;
-
-    si x=1 entonces
-        s <- 1;
-    sino
-        s <- factorial(x-1) * x;
-    finsi
-
+    s <- x+60;
 finsubproceso
 
 algoritmo algo
-    definir z como entero;
-    z <- 4;
-    escribir factorial(z);
-
+    definir l como entero;
+    l <- 34;
+    definir x como logico;
+    definir s como entero;
+    dimension x[3, 3, 3];
+    dimension s[4];
+    s[2] <- 56;
+    x[0, 0, 0] <- verdadero;
+    x [1, 1, 1] <- verdadero;
+    escribir x[0,0,0] y x[1, 1, 1] y negar();
 finalgoritmo

@@ -1,3 +1,11 @@
+subproceso s <- negar
+    definir s,i como entero;
+    s <- 10;
+    para i<-1 hasta 10 con paso 1+1 hacer
+        s <- s-1;
+    finpara
+finsubproceso
+
 algoritmo algo
     definir i, x como entero;
     x <- 34;
@@ -5,8 +13,16 @@ algoritmo algo
     z <- x;
     escribir z;
 
+
+
     para i<-2 hasta 16 con paso 1+1 hacer
+        negar();
         escribir i;
     finpara
+
+    error();
+
+
+
 
 finalgoritmo
