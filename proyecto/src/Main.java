@@ -5,7 +5,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        CharStream input = CharStreams.fromFileName("pruebas/prueba5.txt");
+        CharStream input = CharStreams.fromFileName("pruebas/prueba4.txt");
 
         pseIntLexer lexer = new pseIntLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
